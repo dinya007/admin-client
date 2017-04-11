@@ -3,6 +3,7 @@
 <head>
     <script src="lib/angular/angular.js"></script>
     <script src="lib/angular/angular-route.js"></script>
+    <script src="lib/angular/angular-cookies.js"></script>
     <script src="lib/js/jquery.js"></script>
     <script src="lib/bootstrap/js/bootstrap.js"></script>
     <link rel="stylesheet" type="text/css" href="lib/css/page.css">
@@ -11,12 +12,28 @@
 
     <script src="app/app.js"></script>
     <script src="app/js/controller/login-controller.js"></script>
+    <script src="app/js/controller/home-controller.js"></script>
 
+    <script src="app/js/service/auth-service.js"></script>
     <script src="app/js/service/rest-service.js"></script>
 </head>
 <body>
-<div>
-    <ng-view></ng-view>
+<div class="jumbotron">
+    <div class="container">
+        <div class="col-xs-offset-2 col-xs-8">
+            <div ng-view></div>
+        </div>
+    </div>
+</div>
+
+<div class="credits text-center">
+    <p>
+        <a href="http://jasonwatmore.com/post/2014/05/26/AngularJS-Basic-HTTP-Authentication-Example.aspx">AngularJS
+            Basic HTTP Authentication Example</a>
+    </p>
+    <p>
+        <a href="http://jasonwatmore.com">JasonWatmore.com</a>
+    </p>
 </div>
 </body>
 </html>
