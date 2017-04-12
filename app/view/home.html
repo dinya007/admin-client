@@ -1,3 +1,12 @@
+<div class="container-fluid text-center">
+    <!--<div id="map" style="width:400px;height:400px;"></div>-->
+    <div id="map" style="width:500px;height:500px;" class="text-center"></div>
+    <!--<div id="map"></div>-->
+    <div id="class" ng-repeat="marker in markers | orderBy : 'title'">
+        <a href="#" ng-click="openInfoWindow($event, marker)">{{marker.title}}</a>
+    </div>
+</div>
+
 <h1>Home</h1>
 <p>You're logged in!!</p>
 <p><a href="#/login">Logout</a></a></p>

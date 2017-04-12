@@ -6,6 +6,8 @@
     <script src="lib/angular/angular-cookies.js"></script>
     <script src="lib/js/jquery.js"></script>
     <script src="lib/bootstrap/js/bootstrap.js"></script>
+    <script type="text/javascript"
+            src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDybwNct259mJCxUzniI0sfLXh7UovjsWs&amp;sensor=false&amp;extension=.js"></script>
     <link rel="stylesheet" type="text/css" href="lib/css/page.css">
     <link rel="stylesheet" type="text/css" href="lib/bootstrap/css/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="lib/bootstrap/css/bootstrap-theme.css">
@@ -18,12 +20,8 @@
     <script src="app/js/service/rest-service.js"></script>
 </head>
 <body>
-<div class="jumbotron">
-    <div class="container">
-        <div class="col-xs-offset-2 col-xs-8">
-            <div ng-view></div>
-        </div>
-    </div>
+<div class="container">
+    <div ng-view></div>
 </div>
 
 <div class="credits text-center">
