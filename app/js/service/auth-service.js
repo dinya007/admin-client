@@ -1,31 +1,33 @@
-app.factory('AuthenticationService',
-    ['Base64', '$http', '$cookieStore', '$rootScope', '$timeout',
-        function (Base64, $http, $cookieStore, $rootScope, $timeout) {
+app.factory('authenticationService',
+    ['Base64', '$http', '$cookieStore', '$rootScope', '$timeout', 'restService',
+        function (Base64, $http, $cookieStore, $rootScope, $timeout, restService) {
             var service = {};
 
-            service.Login = function (username, password, callback) {
+            service.login = function (username, password, callback) {
 
                 /* Dummy authentication for testing, uses $timeout to simulate api call
                  ----------------------------------------------*/
-                $timeout(function () {
-                    var response = {success: username === 'test' && password === 'test'};
-                    if (!response.success) {
-                        response.message = 'Username or password is incorrect';
-                    }
-                    callback(response);
-                }, 1000);
+                // $timeout(function () {
+                //     var response = {success: username === 'test' && password === 'test'};
+                //     if (!response.success) {
+                //         response.message = 'Username or password is incorrect';
+                //     }
+                //     callback(response);
+                // }, 1000);
 
 
                 /* Use this for real authentication
                  ----------------------------------------------*/
-                //$http.post('/api/authenticate', { username: username, password: password })
-                //    .success(function (response) {
-                //        callback(response);
-                //    });
+                restService.post('/authentication/login?username=' + username + '&password=' + password)
+                    .then(function (data) {
+                        callback(data);
+                    },function (data) {
+                        callback(data);
+                    });
 
             };
 
-            service.SetCredentials = function (username, password) {
+            service.setCredentials = function (username, password) {
                 var authdata = Base64.encode(username + ':' + password);
 
                 $rootScope.globals = {
@@ -39,10 +41,13 @@ app.factory('AuthenticationService',
                 $cookieStore.put('globals', $rootScope.globals);
             };
 
-            service.ClearCredentials = function () {
-                $rootScope.globals = {};
-                $cookieStore.remove('globals');
-                $http.defaults.headers.common.Authorization = 'Basic ';
+            service.logout = function () {
+                restService.post('/authentication/logout','').then(function(data) {
+                    $rootScope.globals = {};
+                    $cookieStore.remove('globals');
+                    $http.defaults.headers.common.Authorization = 'Basic ';
+                    restService.get('/secure/all');
+                });
             };
 
             return service;

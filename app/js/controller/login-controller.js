@@ -1,19 +1,23 @@
-app.controller('LoginController',
-        ['$scope', '$rootScope', '$location', 'AuthenticationService',
-            function ($scope, $rootScope, $location, AuthenticationService) {
-                // reset login status
-                AuthenticationService.ClearCredentials();
+app.controller('loginController', ['$scope', '$rootScope', '$location', 'authenticationService', function ($scope, $rootScope, $location, authenticationService) {
+    // reset login status
+    authenticationService.logout();
 
-                $scope.login = function () {
-                    $scope.dataLoading = true;
-                    AuthenticationService.Login($scope.username, $scope.password, function (response) {
-                        if (response.success) {
-                            AuthenticationService.SetCredentials($scope.username, $scope.password);
-                            $location.path('/');
-                        } else {
-                            $scope.error = response.message;
-                            $scope.dataLoading = false;
-                        }
-                    });
-                };
-            }]);
+    $scope.login = function () {
+        $scope.dataLoading = true;
+        authenticationService.login($scope.username, $scope.password, function (response) {
+            if (response.status === 200) {
+                authenticationService.setCredentials($scope.username, $scope.password);
+                $location.path('/');
+            } else {
+                var data = response.data;
+                if (data !== null ){
+                    var message = data.message;
+                    if (message !== null) {
+                        $scope.error = message;
+                    }
+                }
+                $scope.dataLoading = false;
+            }
+        });
+    };
+}]);

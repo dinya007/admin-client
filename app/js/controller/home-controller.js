@@ -31,7 +31,7 @@ var cities = [
     }
 ];
 
-app.controller('HomeController', ['$scope', function ($scope) {
+app.controller('homeController', ['$scope', function ($scope) {
     var mapOptions = {
         zoom: 4,
         center: new google.maps.LatLng(40.0000, -98.0000),
