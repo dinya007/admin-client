@@ -62,6 +62,9 @@ app.controller('homeController', ['$scope', 'placeService','$rootScope', functio
         for (var i = 0; i < places.length; i++) {
             createMarker(places[i]);
         }
+
+        $scope.currentPlace = places[0];
+        google.maps.event.trigger($scope.currentPlace.marker, 'click');
     }
 
     $scope.openInfoWindow = function (e, place) {
