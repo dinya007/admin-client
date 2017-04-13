@@ -1,74 +1,73 @@
-var cities = [
-    {
-        city : 'Toronto',
-        desc : 'This is the best city in the world!',
-        lat : 43.7000,
-        long : -79.4000
-    },
-    {
-        city : 'New York',
-        desc : 'This city is aiiiiite!',
-        lat : 40.6700,
-        long : -73.9400
-    },
-    {
-        city : 'Chicago',
-        desc : 'This is the second best city in the world!',
-        lat : 41.8819,
-        long : -87.6278
-    },
-    {
-        city : 'Los Angeles',
-        desc : 'This city is live!',
-        lat : 34.0500,
-        long : -118.2500
-    },
-    {
-        city : 'Las Vegas',
-        desc : 'Sin City...\'nuff said!',
-        lat : 36.0800,
-        long : -115.1522
-    }
-];
+app.controller('homeController', ['$scope', 'placeService','$rootScope', function ($scope, placeService,$rootScope) {
 
-app.controller('homeController', ['$scope', function ($scope) {
-    var mapOptions = {
-        zoom: 4,
-        center: new google.maps.LatLng(40.0000, -98.0000),
-        mapTypeId: google.maps.MapTypeId.TERRAIN
-    };
+    $scope.currentPlace = {};
 
-    $scope.map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
-    $scope.markers = [];
-
-    var infoWindow = new google.maps.InfoWindow();
-
-    var createMarker = function (info){
-
-        var marker = new google.maps.Marker({
-            map: $scope.map,
-            position: new google.maps.LatLng(info.lat, info.long),
-            title: info.city
+    initMap(function () {
+        placeService.getAll().then(function (data) {
+            $scope.places = data.data;
+            updateMap($scope.places);
         });
-        marker.content = '<div class="infoWindowContent">' + info.desc + '</div>';
+    });
 
-        google.maps.event.addListener(marker, 'click', function(){
-            infoWindow.setContent('<h2>' + marker.title + '</h2>' + marker.content);
-            infoWindow.open($scope.map, marker);
-        });
+    function initMap(loadPlaces) {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+                var mapOptions = {
+                    zoom: 15,
+                    center: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
+                    mapTypeId: google.maps.MapTypeId.ROADMAP,
+                    disableDefaultUI: true,
+                    zoomControl: true,
+                    scaleControl: true,
+                    rotateControl: true
+                    // https://developers.google.com/maps/documentation/javascript/controls#DisablingDefaults
+                };
+                $scope.map = new google.maps.Map(document.getElementById('map'), mapOptions);
+                $scope.markers = [];
+                loadPlaces();
+            });
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
 
-        $scope.markers.push(marker);
-
-    };
-
-    for (var i = 0; i < cities.length; i++){
-        createMarker(cities[i]);
     }
 
-    $scope.openInfoWindow = function(e, selectedMarker){
+    function updateMap(places) {
+        var infoWindow = new google.maps.InfoWindow();
+
+        var createMarker = function (place) {
+            var marker = new google.maps.Marker({
+                map: $scope.map,
+                position: new google.maps.LatLng(place.location.lat, place.location.lon),
+                animation: google.maps.Animation.DROP,
+                title: place.locationName
+            });
+            marker.content = '<div class="infoWindowContent">' + place.description + '</div>';
+
+            google.maps.event.addListener(marker, 'click', function () {
+                var contentString = '<div class="info-window">' +
+                    '<h3>' + marker.title + '</h3>' +
+                    '<div class="info-content">' +
+                    '<p>' + marker.content + '</p>' +
+                    '</div>' +
+                    '</div>';
+                infoWindow.setContent(contentString);
+                infoWindow.open($scope.map, marker);
+            });
+
+            place.marker = marker;
+        };
+
+        for (var i = 0; i < places.length; i++) {
+            createMarker(places[i]);
+        }
+    }
+
+    $scope.openInfoWindow = function (e, place) {
         e.preventDefault();
-        google.maps.event.trigger(selectedMarker, 'click');
+        $scope.currentPlace = place;
+        google.maps.event.trigger(place.marker, 'click');
     };
 
 }]);

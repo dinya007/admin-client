@@ -1,12 +1,23 @@
-<div class="container-fluid text-center">
-    <!--<div id="map" style="width:400px;height:400px;"></div>-->
-    <div id="map" style="width:500px;height:500px;" class="text-center"></div>
-    <!--<div id="map"></div>-->
-    <div id="class" ng-repeat="marker in markers | orderBy : 'title'">
-        <a href="#" ng-click="openInfoWindow($event, marker)">{{marker.title}}</a>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+            <ul class="nav nav-sidebar">
+                <li ng-repeat="place in places">
+                    <a href="#" ng-click="openInfoWindow($event, place)">{{place.marker.title}}</a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-sm-9 col-md-10 main">
+            <div class="col-sm-6 col-md-6 main">
+                <label for="locationName" class="label label-info">Название</label>
+                <input type="text" id="locationName" ng-model="currentPlace.locationName" class="form-control" disabled><br>
+
+                <label for="description" class="label label-info">Описание</label>
+                <textarea id="description" ng-model="currentPlace.description" class="form-control" disabled></textarea><br>
+            </div>
+            <div class="col-sm-6 col-md-6 main">
+                <div id="map" style="width:400px;height:400px;"></div>
+            </div>
+        </div>
     </div>
 </div>
-
-<h1>Home</h1>
-<p>You're logged in!!</p>
-<p><a href="#/login">Logout</a></a></p>

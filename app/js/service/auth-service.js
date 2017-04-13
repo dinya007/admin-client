@@ -4,27 +4,12 @@ app.factory('authenticationService',
             var service = {};
 
             service.login = function (username, password, callback) {
-
-                /* Dummy authentication for testing, uses $timeout to simulate api call
-                 ----------------------------------------------*/
-                // $timeout(function () {
-                //     var response = {success: username === 'test' && password === 'test'};
-                //     if (!response.success) {
-                //         response.message = 'Username or password is incorrect';
-                //     }
-                //     callback(response);
-                // }, 1000);
-
-
-                /* Use this for real authentication
-                 ----------------------------------------------*/
                 restService.post('/authentication/login?username=' + username + '&password=' + password)
                     .then(function (data) {
                         callback(data);
                     },function (data) {
                         callback(data);
                     });
-
             };
 
             service.setCredentials = function (username, password) {
@@ -46,7 +31,6 @@ app.factory('authenticationService',
                     $rootScope.globals = {};
                     $cookieStore.remove('globals');
                     $http.defaults.headers.common.Authorization = 'Basic ';
-                    restService.get('/secure/all');
                 });
             };
 
