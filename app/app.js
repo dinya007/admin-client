@@ -1,6 +1,7 @@
 var app = angular.module('app', [
     'ngRoute',
-    'ngCookies'
+    'ngCookies',
+    'ngSanitize'
 ]);
 
 app.config(['$routeProvider', function ($routeProvider) {
@@ -11,12 +12,10 @@ app.config(['$routeProvider', function ($routeProvider) {
             templateUrl: 'app/view/login.html',
             hideMenus: true
         })
-
         .when('/', {
             controller: 'homeController',
             templateUrl: 'app/view/home.html'
         })
-
         .otherwise({redirectTo: '/login'});
 }]);
 

@@ -1,7 +1,6 @@
-app.controller('homeController', ['$scope', 'placeService','$rootScope', function ($scope, placeService,$rootScope) {
+app.controller('homeController', ['$scope', 'placeService', function ($scope, placeService) {
 
     $scope.currentPlace = {};
-
 
     initMap(function () {
         placeService.getAll().then(function (data) {
@@ -71,6 +70,32 @@ app.controller('homeController', ['$scope', 'placeService','$rootScope', functio
         e.preventDefault();
         $scope.currentPlace = place;
         google.maps.event.trigger(place.marker, 'click');
+    };
+
+    $scope.deleteSale = function (place, sale) {
+        var index = place.sales.indexOf(sale);
+
+        if (index > -1) {
+            place.sales.splice(index, 1);
+            placeService.save(place);
+        }
+
+    };
+
+    $scope.archiveSale = function (place, sale) {
+        sale.active = false;
+        placeService.save(place);
+    };
+
+    $scope.unarchiveSale = function (place, sale) {
+        sale.active = true;
+        placeService.save(place);
+    };
+
+    $scope.bindSaleText = function (sale) {
+        if (sale.active) {
+            return sale.description;
+        } else return '<del>' + sale.description + '</del>';
     };
 
 }]);

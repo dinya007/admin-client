@@ -1,23 +1,60 @@
 <div class="container-fluid">
     <div class="row">
-        <div class="col-sm-3 col-md-2 sidebar">
-            <ul class="nav nav-sidebar">
-                <li ng-repeat="place in places">
-                    <a href="#" ng-click="openInfoWindow($event, place)">{{place.marker.title}}</a>
-                </li>
-            </ul>
-        </div>
-        <div class="col-sm-9 col-md-10 main">
-            <div class="col-sm-6 col-md-6 main">
-                <label for="locationName" class="label label-info">Название</label>
-                <input type="text" id="locationName" ng-model="currentPlace.locationName" class="form-control" disabled><br>
+        <div class="col-sm-10 col-md-8 sidebar">
+            <h4 class="text-center">Ваши заведения</h4>
+            <div class="panel-group" id="accordion">
+                <div ng-include="'/app/view/spinner.html'" class="text-center"></div>
 
-                <label for="description" class="label label-info">Описание</label>
-                <textarea id="description" ng-model="currentPlace.description" class="form-control" disabled></textarea><br>
+                <div class="panel-heading" ng-show="!places.length && !$root.dataLoading">
+                    <h4 class="panel-title text-center">
+                        Укажите свое первое заведение нажав кнопку выше
+                    </h4>
+                </div>
+
+                <div class="panel panel-default" ng-repeat="place in places">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <div class="row">
+                                <div class="col-md-7 text-right">
+                                    <a data-toggle="collapse" data-parent="#accordion" data-target="#collapse{{$index}}"
+                                       ng-click="openInfoWindow($event, place)" style="cursor:pointer">
+                                        {{place.locationName}}
+                                    </a>
+                                </div>
+                                <div class="col-md-5 text-right">
+                                    <span class="glyphicon glyphicon-pencil btn"></span>
+                                    <span class="glyphicon glyphicon-plus btn"></span>
+                                </div>
+                            </div>
+                        </h4>
+                    </div>
+                    <div id="collapse{{$index}}" class="panel-collapse collapse" ng-class="{in: $index==0}">
+                        <div ng-show="!place.sales.length" class="panel-body">
+                            <h4 class="panel-title text-center">
+                                Укажите свою первую скидку нажав кнопку выше
+                            </h4>
+                        </div>
+                        <div class="panel-body" ng-repeat="sale in place.sales | orderBy : 'sale.active' : false">
+                            <div class="row">
+                                <div class="col-md-8 del">
+                                    <span ng-bind-html="bindSaleText(sale)" ></span>
+                                </div>
+                                <div class="col-md-4 text-right" >
+                                    <span class="glyphicon glyphicon-pencil btn"></span>
+                                    <span ng-show="sale.active" class="glyphicon glyphicon-inbox btn" ng-click="archiveSale(place, sale)"></span>
+                                    <span ng-show="!sale.active" class="glyphicon glyphicon glyphicon-cutlery btn" ng-click="unarchiveSale(place, sale)"></span>
+                                    <span class="glyphicon glyphicon-trash btn" ng-click="deleteSale(place, sale)"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="col-sm-6 col-md-6 main">
-                <div id="map" style="width:400px;height:400px;"></div>
-            </div>
+        </div>
+        <div class="col-sm-3 col-md-4 main">
+            <div id="map" style="width:400px;height:400px;"></div>
         </div>
     </div>
+</div>
+</div>
 </div>

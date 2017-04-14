@@ -3,7 +3,6 @@ app.controller('loginController', ['$scope', '$rootScope', '$location', 'authent
     authenticationService.logout();
 
     $scope.login = function () {
-        $scope.dataLoading = true;
         authenticationService.login($scope.username, $scope.password, function (response) {
             if (response.status === 200) {
                 authenticationService.setCredentials($scope.username, $scope.password);
@@ -16,7 +15,6 @@ app.controller('loginController', ['$scope', '$rootScope', '$location', 'authent
                         $scope.error = message;
                     }
                 }
-                $scope.dataLoading = false;
             }
         });
     };

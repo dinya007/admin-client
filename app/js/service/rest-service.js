@@ -1,11 +1,15 @@
-app.service('restService', ['$http', '$q', function ($http, $q) {
+app.service('restService', ['$http', '$q', '$rootScope', function ($http, $q, $rootScope) {
 
     this.get = function (url) {
         var deferred = $q.defer();
 
+        $rootScope.dataLoading = true;
+
         $http.get(url).then(function (data) {
+            $rootScope.dataLoading = false;
             deferred.resolve(data);
         }, function (error, status) {
+            $rootScope.dataLoading = false;
             logError(error, status);
             deferred.reject(error);
         });
@@ -16,9 +20,13 @@ app.service('restService', ['$http', '$q', function ($http, $q) {
     this.post = function (url, data) {
         var deferred = $q.defer();
 
+        $rootScope.dataLoading = true;
+
         $http.post(url, data).then(function (data) {
+            $rootScope.dataLoading = false;
             deferred.resolve(data);
         }, function (error, status) {
+            $rootScope.dataLoading = false;
             logError(error, status);
             deferred.reject(error);
         });
@@ -29,9 +37,13 @@ app.service('restService', ['$http', '$q', function ($http, $q) {
     this.put = function (url, data) {
         var deferred = $q.defer();
 
+        $rootScope.dataLoading = true;
+
         $http.put(url, data).then(function (data) {
+            $rootScope.dataLoading = false;
             deferred.resolve(data.data);
         }, function (error, status) {
+            $rootScope.dataLoading = false;
             logError(error, status);
             deferred.reject(error);
         });
@@ -42,9 +54,13 @@ app.service('restService', ['$http', '$q', function ($http, $q) {
     this.delete = function (url) {
         var deferred = $q.defer();
 
+        $rootScope.dataLoading = true;
+
         $http.delete(url).then(function (data) {
+            $rootScope.dataLoading = false;
             deferred.resolve(data.data);
         }, function (error, status) {
+            $rootScope.dataLoading = false;
             logError(error, status);
             deferred.reject(error, status);
         });
