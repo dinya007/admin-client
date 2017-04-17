@@ -3,12 +3,14 @@ app.controller('homeController', ['$scope', 'placeService', function ($scope, pl
     $scope.currentPlace = {};
     $scope.modifiedPlace = {};
 
-    initMap(function () {
+    var loadPlaces = function (setPlaces) {
         placeService.getAll().then(function (data) {
             $scope.places = data.data;
-            updateMap($scope.places);
+            setPlaces($scope.places);
         });
-    });
+    };
+
+    initMap(loadPlaces);
 
     function initMap(loadPlaces) {
         if (navigator.geolocation) {
@@ -25,66 +27,71 @@ app.controller('homeController', ['$scope', 'placeService', function ($scope, pl
                 };
                 $scope.map = new google.maps.Map(document.getElementById('map'), mapOptions);
                 $scope.markers = [];
-                loadPlaces();
+
+                loadPlaces(setPlaces);
             });
         } else {
             alert("Geolocation is not supported by this browser.");
         }
 
-    }
-
-    function updateMap(places) {
-        var infoWindow = new google.maps.InfoWindow();
-
-        var createMarker = function (place) {
-            var marker = new google.maps.Marker({
-                map: $scope.map,
-                position: new google.maps.LatLng(place.location.lat, place.location.lon),
-                animation: google.maps.Animation.DROP,
-                title: place.locationName
-            });
-
-
-            if (place.sales !== null) {
-                marker.content = '<ul class="list-group">';
-                for (var i = 0; i < place.sales.length && i < 3; i++) {
-                    var sale = place.sales[i];
-                    if (sale.active) {
-                        marker.content += '<li class="list-group-item">' + sale.description + '</li>'
-                    }
-                }
-                marker.content += '</ul>';
-            } else {
-                marker.content = '';
-            }
-
-            google.maps.event.addListener(marker, 'click', function () {
-                var contentString = '<div class="info-window">' +
-                    '<h3 class="text-center">' + marker.title + '</h3>' +
-                    '<div class="info-content">' +
-                    '<p>' + marker.content + '</p>' +
-                    '</div>' +
-                    '</div>';
-                infoWindow.setContent(contentString);
-                infoWindow.open($scope.map, marker);
-            });
-
-            place.marker = marker;
+        var setPlaces = function (places) {
+            updateMap(places);
         };
 
-        for (var i = 0; i < places.length; i++) {
-            createMarker(places[i]);
-        }
+        updateMap = function (places) {
+            var infoWindow = new google.maps.InfoWindow();
 
-        $scope.currentPlace = places[0];
-        google.maps.event.trigger($scope.currentPlace.marker, 'click');
+            var createMarker = function (place) {
+                var marker = new google.maps.Marker({
+                    map: $scope.map,
+                    position: new google.maps.LatLng(place.location.lat, place.location.lon),
+                    animation: google.maps.Animation.DROP,
+                    title: place.locationName
+                });
+
+
+                if (place.sales !== null) {
+                    marker.content = '<ul class="list-group">';
+                    for (var i = 0; i < place.sales.length && i < 3; i++) {
+                        var sale = place.sales[i];
+                        if (sale.active) {
+                            marker.content += '<li class="list-group-item">' + sale.description + '</li>'
+                        }
+                    }
+                    marker.content += '</ul>';
+                } else {
+                    marker.content = '';
+                }
+
+                google.maps.event.addListener(marker, 'click', function () {
+                    var contentString = '<div class="info-window">' +
+                        '<h3 class="text-center">' + marker.title + '</h3>' +
+                        '<div class="info-content">' +
+                        '<p>' + marker.content + '</p>' +
+                        '</div>' +
+                        '</div>';
+                    infoWindow.setContent(contentString);
+                    infoWindow.open($scope.map, marker);
+                });
+
+                place.marker = marker;
+            };
+
+            for (var i = 0; i < places.length; i++) {
+                createMarker(places[i]);
+            }
+
+            $scope.currentPlace = places[0];
+            google.maps.event.trigger($scope.currentPlace.marker, 'click');
+        };
+
+        $scope.openInfoWindow = function (e, place) {
+            e.preventDefault();
+            $scope.currentPlace = place;
+            google.maps.event.trigger(place.marker, 'click');
+        };
+
     }
-
-    $scope.openInfoWindow = function (e, place) {
-        e.preventDefault();
-        $scope.currentPlace = place;
-        google.maps.event.trigger(place.marker, 'click');
-    };
 
     $scope.deleteSale = function (place, sale) {
 
@@ -143,14 +150,14 @@ app.controller('homeController', ['$scope', 'placeService', function ($scope, pl
 
     $scope.archiveSale = function (place, sale) {
         sale.active = false;
-        placeService.save(place, function() {
+        placeService.save(place, function () {
             updateMap($scope.places);
         });
     };
 
     $scope.unarchiveSale = function (place, sale) {
         sale.active = true;
-        placeService.save(place, function() {
+        placeService.save(place, function () {
             updateMap($scope.places);
         });
     };
