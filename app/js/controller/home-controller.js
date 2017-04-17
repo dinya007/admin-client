@@ -1,6 +1,7 @@
 app.controller('homeController', ['$scope', 'placeService', function ($scope, placeService) {
 
     $scope.currentPlace = {};
+    $scope.modifiedPlace = {};
 
     initMap(function () {
         placeService.getAll().then(function (data) {
@@ -42,11 +43,24 @@ app.controller('homeController', ['$scope', 'placeService', function ($scope, pl
                 animation: google.maps.Animation.DROP,
                 title: place.locationName
             });
-            marker.content = '<div class="infoWindowContent">' + place.description + '</div>';
+
+
+            if (place.sales !== null) {
+                marker.content = '<ul class="list-group">';
+                for (var i = 0; i < place.sales.length && i < 3; i++) {
+                    var sale = place.sales[i];
+                    if (sale.active) {
+                        marker.content += '<li class="list-group-item">' + sale.description + '</li>'
+                    }
+                }
+                marker.content += '</ul>';
+            } else {
+                marker.content = '';
+            }
 
             google.maps.event.addListener(marker, 'click', function () {
                 var contentString = '<div class="info-window">' +
-                    '<h3>' + marker.title + '</h3>' +
+                    '<h3 class="text-center">' + marker.title + '</h3>' +
                     '<div class="info-content">' +
                     '<p>' + marker.content + '</p>' +
                     '</div>' +
@@ -100,14 +114,45 @@ app.controller('homeController', ['$scope', 'placeService', function ($scope, pl
 
     };
 
+    $scope.deletePlace = function () {
+        var place = $scope.places[$scope.modifiedPlaceIndex];
+        bootbox.confirm({
+            message: "<h4 class='text-center'>Удалить заведение?</h4><strong>" + place.address + '<strong>',
+            buttons: {
+                confirm: {
+                    label: 'Да',
+                    className: 'btn-success'
+                },
+                cancel: {
+                    label: 'Нет',
+                    className: 'btn-danger'
+                }
+            },
+            callback: function (result) {
+                if (result) {
+                    placeService.delete(place)
+                        .then(function (data) {
+                            $scope.places.splice($scope.modifiedPlaceIndex, 1);
+
+                        });
+                }
+            }
+        });
+
+    };
+
     $scope.archiveSale = function (place, sale) {
         sale.active = false;
-        placeService.save(place);
+        placeService.save(place, function() {
+            updateMap($scope.places);
+        });
     };
 
     $scope.unarchiveSale = function (place, sale) {
         sale.active = true;
-        placeService.save(place);
+        placeService.save(place, function() {
+            updateMap($scope.places);
+        });
     };
 
     $scope.savePlace = function (place) {
@@ -122,7 +167,6 @@ app.controller('homeController', ['$scope', 'placeService', function ($scope, pl
 
     $scope.addNewSale = function (place) {
         var sale = {};
-        sale.description = "Ваша новая скидка";
         sale.active = true;
         sale.isNew = true;
         place.sales.unshift(sale);
@@ -153,21 +197,6 @@ app.controller('homeController', ['$scope', 'placeService', function ($scope, pl
     };
 
     $scope.createPlace = function (name, address, description) {
-        if (name === '') {
-            alert('Введите, пожалуйста, название заведения');
-            return;
-        }
-
-        if (address === '') {
-            alert('Введите, пожалуйста, адрес заведения');
-            return;
-        }
-
-        if (description === '') {
-            alert('Введите, пожалуйста, описание заведения');
-            return;
-        }
-
         var newPlace = {};
 
         newPlace.name = name;
@@ -176,9 +205,31 @@ app.controller('homeController', ['$scope', 'placeService', function ($scope, pl
 
         placeService.create(newPlace)
             .then(function (data) {
-                initMap();
+                $scope.places.push(data.data);
+                updateMap($scope.places);
             });
 
-    }
+    };
+
+    $scope.startModifyingPlace = function (index) {
+        var place = $scope.places[index];
+        $scope.modifiedPlace.locationName = place.locationName;
+        $scope.modifiedPlace.address = place.address;
+        $scope.modifiedPlace.description = place.description;
+        $scope.modifiedPlaceIndex = index;
+    };
+
+    $scope.updatePlace = function () {
+        var place = $scope.places[$scope.modifiedPlaceIndex];
+        place.locationName = $scope.modifiedPlace.locationName;
+        place.address = $scope.modifiedPlace.address;
+        place.description = $scope.modifiedPlace.description;
+        var oldMarker = place.marker;
+        placeService.saveAndUpdateMap(place, function (data) {
+            oldMarker.setMap(null);
+            $scope.places[$scope.modifiedPlaceIndex] = data.data;
+            updateMap($scope.places);
+        });
+    };
 
 }]);

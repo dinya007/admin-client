@@ -5,3 +5,8 @@
 .btn.btn-icon .glyphicon {
     margin-right: 0;
 }
+
+.not-active-sale {
+    background: #ff9999;
+
+}

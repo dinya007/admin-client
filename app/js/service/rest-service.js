@@ -51,6 +51,23 @@ app.service('restService', ['$http', '$q', '$rootScope', function ($http, $q, $r
         return deferred.promise;
     };
 
+    this.patch = function (url, data) {
+        var deferred = $q.defer();
+
+        $rootScope.dataLoading = true;
+
+        $http.patch(url, data).then(function (data) {
+            $rootScope.dataLoading = false;
+            deferred.resolve(data);
+        }, function (error, status) {
+            $rootScope.dataLoading = false;
+            logError(error, status);
+            deferred.reject(error);
+        });
+
+        return deferred.promise;
+    };
+
     this.delete = function (url) {
         var deferred = $q.defer();
 
