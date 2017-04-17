@@ -11,6 +11,10 @@ app.service('placeService', ['restService', function (restService) {
             .then(function (data) {
                 place.marker = marker;
             });
-    }
+    };
+
+    this.create = function (place) {
+        return restService.put("/secure/place", place);
+    };
 
 }]);

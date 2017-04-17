@@ -1,7 +1,8 @@
 var app = angular.module('app', [
     'ngRoute',
     'ngCookies',
-    'ngSanitize'
+    'ngSanitize',
+    'xeditable'
 ]);
 
 app.config(['$routeProvider', function ($routeProvider) {
@@ -19,7 +20,7 @@ app.config(['$routeProvider', function ($routeProvider) {
         .otherwise({redirectTo: '/login'});
 }]);
 
-app.run(['$rootScope', '$location', '$cookieStore', '$http', function ($rootScope, $location, $cookieStore, $http) {
+app.run(['$rootScope', '$location', '$cookieStore', '$http', 'editableOptions', function ($rootScope, $location, $cookieStore, $http, editableOptions) {
     // keep user logged in after page refresh
     $rootScope.globals = $cookieStore.get('globals') || {};
     if ($rootScope.globals.currentUser) {
@@ -32,6 +33,8 @@ app.run(['$rootScope', '$location', '$cookieStore', '$http', function ($rootScop
             $location.path('/login');
         }
     });
+
+    editableOptions.theme = 'bs3';
 }]);
 
 app.config(['$httpProvider', function ($httpProvider) {

@@ -1,0 +1,30 @@
+<div class="modal fade" id="modify-place-modal" tabindex="-1" role="dialog" aria-labelledby="modify-place-modal-label">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="modify-place-modal-label">Изменение вашего заведения</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="name">Название заведения:</label>
+                    <input type="text" class="form-control" id="name" ng-model="modifiedPlace.locationName"/>
+                </div>
+                <div class="form-group">
+                    <label for="name">Адрес:</label>
+                    <input type="text" class="form-control" id="address" ng-model="modifiedPlace.address"/>
+                </div>
+                <div class="form-group">
+                    <label for="name">Описание:</label>
+                    <input type="text" class="form-control" id="description" ng-model="modifiedPlace.description"/>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+                <button type="button" class="btn btn-primary">Сохранить изменения</button>
+            </div>
+        </div>
+    </div>
+</div>
+</div>

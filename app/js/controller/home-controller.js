@@ -73,12 +73,30 @@ app.controller('homeController', ['$scope', 'placeService', function ($scope, pl
     };
 
     $scope.deleteSale = function (place, sale) {
-        var index = place.sales.indexOf(sale);
 
-        if (index > -1) {
-            place.sales.splice(index, 1);
-            placeService.save(place);
-        }
+        bootbox.confirm({
+            message: "<h4 class='text-center'>Удалить скидку?</h4><strong>" + sale.description + '<strong>',
+            buttons: {
+                confirm: {
+                    label: 'Да',
+                    className: 'btn-success'
+                },
+                cancel: {
+                    label: 'Нет',
+                    className: 'btn-danger'
+                }
+            },
+            callback: function (result) {
+                if (result) {
+                    var index = place.sales.indexOf(sale);
+
+                    if (index > -1) {
+                        place.sales.splice(index, 1);
+                        placeService.save(place);
+                    }
+                }
+            }
+        });
 
     };
 
@@ -92,10 +110,75 @@ app.controller('homeController', ['$scope', 'placeService', function ($scope, pl
         placeService.save(place);
     };
 
+    $scope.savePlace = function (place) {
+        placeService.save(place);
+    };
+
     $scope.bindSaleText = function (sale) {
         if (sale.active) {
             return sale.description;
         } else return '<del>' + sale.description + '</del>';
     };
+
+    $scope.addNewSale = function (place) {
+        var sale = {};
+        sale.description = "Ваша новая скидка";
+        sale.active = true;
+        sale.isNew = true;
+        place.sales.unshift(sale);
+    };
+
+
+    $scope.onSaleShow = function (sale, form) {
+        if (sale.isNew === true) {
+            form.$show();
+        }
+        return true;
+    };
+
+    $scope.removeNewSale = function (place, sale) {
+        if (sale.isNew) {
+            var index = place.sales.indexOf(sale);
+
+            if (index > -1) {
+                place.sales.splice(index, 1);
+            }
+        }
+    };
+
+    $scope.removeIsNewAttribute = function (sale) {
+        if (sale.isNew) {
+            delete sale.isNew;
+        }
+    };
+
+    $scope.createPlace = function (name, address, description) {
+        if (name === '') {
+            alert('Введите, пожалуйста, название заведения');
+            return;
+        }
+
+        if (address === '') {
+            alert('Введите, пожалуйста, адрес заведения');
+            return;
+        }
+
+        if (description === '') {
+            alert('Введите, пожалуйста, описание заведения');
+            return;
+        }
+
+        var newPlace = {};
+
+        newPlace.name = name;
+        newPlace.address = address;
+        newPlace.description = description;
+
+        placeService.create(newPlace)
+            .then(function (data) {
+                initMap();
+            });
+
+    }
 
 }]);

@@ -41,7 +41,7 @@ app.service('restService', ['$http', '$q', '$rootScope', function ($http, $q, $r
 
         $http.put(url, data).then(function (data) {
             $rootScope.dataLoading = false;
-            deferred.resolve(data.data);
+            deferred.resolve(data);
         }, function (error, status) {
             $rootScope.dataLoading = false;
             logError(error, status);
@@ -58,7 +58,7 @@ app.service('restService', ['$http', '$q', '$rootScope', function ($http, $q, $r
 
         $http.delete(url).then(function (data) {
             $rootScope.dataLoading = false;
-            deferred.resolve(data.data);
+            deferred.resolve(data);
         }, function (error, status) {
             $rootScope.dataLoading = false;
             logError(error, status);
