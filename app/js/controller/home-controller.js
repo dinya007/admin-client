@@ -13,6 +13,8 @@ app.controller('homeController', ['$scope', 'placeService', function ($scope, pl
     initMap(loadPlaces);
 
     function initMap(loadPlaces) {
+        var infoWindow = new google.maps.InfoWindow();
+
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function (position) {
                 var mapOptions = {
@@ -39,7 +41,6 @@ app.controller('homeController', ['$scope', 'placeService', function ($scope, pl
         };
 
         updateMap = function (places) {
-            var infoWindow = new google.maps.InfoWindow();
 
             var createMarker = function (place) {
                 var marker = new google.maps.Marker({
@@ -48,7 +49,6 @@ app.controller('homeController', ['$scope', 'placeService', function ($scope, pl
                     animation: google.maps.Animation.DROP,
                     title: place.locationName
                 });
-
 
                 if (place.sales !== null) {
                     marker.content = '<ul class="list-group">';
@@ -179,12 +179,17 @@ app.controller('homeController', ['$scope', 'placeService', function ($scope, pl
         place.sales.unshift(sale);
     };
 
-
     $scope.onSaleShow = function (sale, form) {
         if (sale.isNew === true) {
             form.$show();
         }
         return true;
+    };
+
+    $scope.saveNewSale = function (place) {
+        placeService.savePlace(place, function (data) {
+            updateMap($scope.places);
+        });
     };
 
     $scope.removeNewSale = function (place, sale) {

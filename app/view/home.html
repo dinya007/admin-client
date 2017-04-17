@@ -47,7 +47,7 @@
                                 <div class="col-md-9">
                                     <span editable-text="sale.description" ng-bind-html="bindSaleText(sale)"
                                           e-form="editSaleForm" oncancel="removeNewSale(place, sale)"
-                                          onaftersave="removeIsNewAttribute(sale); savePlace(place)"
+                                          onaftersave="removeIsNewAttribute(sale); saveNewSale(place)"
                                           e-placeholder="Ваша новая скидка"
                                           ng-show="onSaleShow(sale, editSaleForm)"
                                           ng-class="{'not-active-sale': !sale.active}"></span>
