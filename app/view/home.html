@@ -13,7 +13,7 @@
 
                 <div class="panel-heading" ng-show="!places.length && !$root.dataLoading">
                     <h4 class="panel-title text-center">
-                        Укажите свое первое заведение нажав кнопку выше
+                        Укажите свое первое заведение нажав кнопку 'Добавить новое'
                     </h4>
                 </div>
 
@@ -30,8 +30,8 @@
                                 <div class="col-md-5 text-right">
                                     <span class="glyphicon glyphicon-pencil btn" data-toggle="modal"
                                           data-target="#modify-place-modal"
-                                          ng-click="startModifyingPlace($index)"></span>
-                                    <span class="glyphicon glyphicon-plus btn" ng-click="addNewSale(place)"></span>
+                                          ng-click="startModifyingPlace($index)" title="Редактировать заведение"></span>
+                                    <span class="glyphicon glyphicon-plus btn" ng-click="addNewSale(place)" title="Добавить новую акцию"></span>
                                 </div>
                             </div>
                         </h4>
@@ -39,28 +39,27 @@
                     <div id="collapse{{$index}}" class="panel-collapse collapse" ng-class="{in: $index==0}">
                         <div ng-show="!place.sales.length" class="panel-body">
                             <h4 class="panel-title text-center">
-                                Укажите свою первую скидку нажав кнопку выше
+                                Укажите свою первую акцию нажав кнопку плюс
                             </h4>
                         </div>
-                        <div class="panel-body" ng-repeat="sale in place.sales | orderBy : '!active'">
+                        <div class="panel-body" ng-repeat="sale in place.sales | orderBy : '!active'" ng-class="{'not-active-sale': !sale.active}">
                             <div class="row">
                                 <div class="col-md-9">
-                                    <span editable-text="sale.description" ng-bind-html="bindSaleText(sale)"
+                                    <span editable-text="sale.description"
                                           e-form="editSaleForm" oncancel="removeNewSale(place, sale)"
                                           onaftersave="removeIsNewAttribute(sale); saveNewSale(place)"
-                                          e-placeholder="Ваша новая скидка"
-                                          ng-show="onSaleShow(sale, editSaleForm)"
-                                          ng-class="{'not-active-sale': !sale.active}"></span>
+                                          e-placeholder="Ваша новая акция"
+                                          ng-show="onSaleShow(sale, editSaleForm)">{{sale.description}}</span>
                                 </div>
                                 <div class="col-md-3 text-right">
                                     <span class="glyphicon glyphicon-pencil btn" ng-click="editSaleForm.$show()"
-                                          ng-hide="editSaleForm.$visible"></span>
+                                          ng-hide="editSaleForm.$visible" title="Редактировать акцию"></span>
                                     <span ng-show="sale.active" class="glyphicon glyphicon-inbox btn"
-                                          ng-click="archiveSale(place, sale)"></span>
+                                          ng-click="archiveSale(place, sale)" title="Поместить акцию в архив"></span>
                                     <span ng-show="!sale.active" class="glyphicon glyphicon glyphicon-cutlery btn"
-                                          ng-click="unarchiveSale(place, sale)"></span>
+                                          ng-click="unarchiveSale(place, sale)" title="Сделать акцию активной"></span>
                                     <span class="glyphicon glyphicon-trash btn"
-                                          ng-click="deleteSale(place, sale)"></span>
+                                          ng-click="deleteSale(place, sale)" title="Удалить акцию"></span>
                                 </div>
                             </div>
                         </div>

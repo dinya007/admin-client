@@ -1,6 +1,6 @@
 app.controller('homeController', ['$scope', 'placeService', function ($scope, placeService) {
 
-    $scope.currentPlace = {};
+    $scope.currentPlace = undefined;
     $scope.modifiedPlace = {};
 
     var loadPlaces = function (setPlaces) {
@@ -10,88 +10,7 @@ app.controller('homeController', ['$scope', 'placeService', function ($scope, pl
         });
     };
 
-    initMap(loadPlaces);
-
-    function initMap(loadPlaces) {
-        var infoWindow = new google.maps.InfoWindow();
-
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function (position) {
-                var mapOptions = {
-                    zoom: 15,
-                    center: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
-                    mapTypeId: google.maps.MapTypeId.ROADMAP,
-                    disableDefaultUI: true,
-                    zoomControl: true,
-                    scaleControl: true,
-                    rotateControl: true
-                    // https://developers.google.com/maps/documentation/javascript/controls#DisablingDefaults
-                };
-                $scope.map = new google.maps.Map(document.getElementById('map'), mapOptions);
-                $scope.markers = [];
-
-                loadPlaces(setPlaces);
-            });
-        } else {
-            alert("Geolocation is not supported by this browser.");
-        }
-
-        var setPlaces = function (places) {
-            updateMap(places);
-        };
-
-        updateMap = function (places) {
-
-            var createMarker = function (place) {
-                var marker = new google.maps.Marker({
-                    map: $scope.map,
-                    position: new google.maps.LatLng(place.location.lat, place.location.lon),
-                    animation: google.maps.Animation.DROP,
-                    title: place.locationName
-                });
-
-                if (place.sales !== null) {
-                    marker.content = '<ul class="list-group">';
-                    for (var i = 0; i < place.sales.length && i < 3; i++) {
-                        var sale = place.sales[i];
-                        if (sale.active) {
-                            marker.content += '<li class="list-group-item">' + sale.description + '</li>'
-                        }
-                    }
-                    marker.content += '</ul>';
-                } else {
-                    marker.content = '';
-                }
-
-                google.maps.event.addListener(marker, 'click', function () {
-                    var contentString = '<div class="info-window">' +
-                        '<h3 class="text-center">' + marker.title + '</h3>' +
-                        '<div class="info-content">' +
-                        '<p>' + marker.content + '</p>' +
-                        '</div>' +
-                        '</div>';
-                    infoWindow.setContent(contentString);
-                    infoWindow.open($scope.map, marker);
-                });
-
-                place.marker = marker;
-            };
-
-            for (var i = 0; i < places.length; i++) {
-                createMarker(places[i]);
-            }
-
-            $scope.currentPlace = places[0];
-            google.maps.event.trigger($scope.currentPlace.marker, 'click');
-        };
-
-        $scope.openInfoWindow = function (e, place) {
-            e.preventDefault();
-            $scope.currentPlace = place;
-            google.maps.event.trigger(place.marker, 'click');
-        };
-
-    }
+    initMap(loadPlaces, $scope);
 
     $scope.deleteSale = function (place, sale) {
 
@@ -151,14 +70,14 @@ app.controller('homeController', ['$scope', 'placeService', function ($scope, pl
     $scope.archiveSale = function (place, sale) {
         sale.active = false;
         placeService.save(place, function () {
-            updateMap($scope.places);
+            $scope.updateMap($scope.places);
         });
     };
 
     $scope.unarchiveSale = function (place, sale) {
         sale.active = true;
         placeService.save(place, function () {
-            updateMap($scope.places);
+            $scope.updateMap($scope.places);
         });
     };
 
@@ -166,16 +85,13 @@ app.controller('homeController', ['$scope', 'placeService', function ($scope, pl
         placeService.save(place);
     };
 
-    $scope.bindSaleText = function (sale) {
-        if (sale.active) {
-            return sale.description;
-        } else return '<del>' + sale.description + '</del>';
-    };
-
     $scope.addNewSale = function (place) {
         var sale = {};
         sale.active = true;
         sale.isNew = true;
+        if (!place.sales) {
+            place.sales = [];
+        }
         place.sales.unshift(sale);
     };
 
@@ -187,8 +103,8 @@ app.controller('homeController', ['$scope', 'placeService', function ($scope, pl
     };
 
     $scope.saveNewSale = function (place) {
-        placeService.savePlace(place, function (data) {
-            updateMap($scope.places);
+        placeService.save(place, function (data) {
+            $scope.updateMap($scope.places);
         });
     };
 
@@ -218,7 +134,7 @@ app.controller('homeController', ['$scope', 'placeService', function ($scope, pl
         placeService.create(newPlace)
             .then(function (data) {
                 $scope.places.push(data.data);
-                updateMap($scope.places);
+                $scope.updateMap($scope.places);
             });
 
     };
@@ -240,7 +156,7 @@ app.controller('homeController', ['$scope', 'placeService', function ($scope, pl
         placeService.saveAndUpdateMap(place, function (data) {
             oldMarker.setMap(null);
             $scope.places[$scope.modifiedPlaceIndex] = data.data;
-            updateMap($scope.places);
+            $scope.updateMap($scope.places);
         });
     };
 
