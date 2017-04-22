@@ -1,4 +1,4 @@
-function initMap(loadPlaces, $scope) {
+function initMap($scope, places, finishCallback, focusFirstPlace) {
     var infoWindow = new google.maps.InfoWindow();
 
     if (navigator.geolocation) {
@@ -16,15 +16,12 @@ function initMap(loadPlaces, $scope) {
             $scope.map = new google.maps.Map(document.getElementById('map'), mapOptions);
             $scope.markers = [];
 
-            loadPlaces(setPlaces);
+            $scope.updateMap(places);
+            finishCallback();
         });
     } else {
         alert("Geolocation is not supported by this browser.");
     }
-
-    var setPlaces = function (places) {
-        $scope.updateMap(places);
-    };
 
     $scope.updateMap = function (places) {
 
@@ -74,7 +71,9 @@ function initMap(loadPlaces, $scope) {
         if (!$scope.currentPlace) {
             $scope.currentPlace = places[0];
         }
-        google.maps.event.trigger($scope.currentPlace.marker, 'click');
+        if (focusFirstPlace && $scope.currentPlace) {
+            google.maps.event.trigger($scope.currentPlace.marker, 'click');
+        }
     };
 
     $scope.openInfoWindow = function (e, place) {

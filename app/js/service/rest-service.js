@@ -1,4 +1,4 @@
-app.service('restService', ['$http', '$q', '$rootScope', function ($http, $q, $rootScope) {
+app.service('restService', ['$http', '$q', '$rootScope', '$location', function ($http, $q, $rootScope, $location) {
 
     this.get = function (url) {
         var deferred = $q.defer();
@@ -90,6 +90,12 @@ app.service('restService', ['$http', '$q', '$rootScope', function ($http, $q, $r
             console.error(error.status + " : " + error.statusText + ".\n" + error.data.message);
         } else {
             console.error(error.status + " : " + error.statusText);
+        }
+        if (error.status === 403 || error.status === 401) {
+            if (error.status === 403) {
+                alert("У вас недостаточно привелегий для обращения к ресурсу");
+            }
+            $location.path('/login');
         }
     };
 

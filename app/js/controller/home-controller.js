@@ -3,14 +3,12 @@ app.controller('homeController', ['$scope', 'placeService', function ($scope, pl
     $scope.currentPlace = undefined;
     $scope.modifiedPlace = {};
 
-    var loadPlaces = function (setPlaces) {
-        placeService.getAll().then(function (data) {
-            $scope.places = data.data;
-            setPlaces($scope.places);
-        });
-    };
+    placeService.getAll().then(function (data) {
+        $scope.places = data.data;
+        initMap($scope, $scope.places, function () {
+        }, true);
+    });
 
-    initMap(loadPlaces, $scope);
 
     $scope.deleteSale = function (place, sale) {
 
